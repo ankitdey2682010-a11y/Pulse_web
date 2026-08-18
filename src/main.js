@@ -14,34 +14,41 @@ const mediaExplanation = document.getElementById('media-explanation');
 
 const loadingSpinner = document.getElementById('loading');
 
-// Set max date to today
 const today = new Date().toISOString().split('T')[0];
 datePicker.max = today;
 datePicker.value = today;
 
-async function fetchApod(date) {
-    // Read the secret key injected by Vite
+async function fetchApod(date) 
+{
+
     const apiKey = import.meta.env.VITE_NASA_API_KEY || 'DEMO_KEY';
     const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`;
 
     loadingSpinner.classList.remove('hidden');
     mediaContainer.innerHTML = '';
     
-    try {
+    try 
+    {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch data from NASA API');
         
         const data = await response.json();
         renderApod(data);
-    } catch (error) {
+    } 
+    catch (error) 
+    {
+
         mediaTitle.textContent = "Error";
         mediaExplanation.textContent = error.message;
-    } finally {
+    }
+     finally 
+     {
         loadingSpinner.classList.add('hidden');
     }
 }
 
-function renderApod(data) {
+function renderApod(data) 
+{
     mediaTitle.textContent = data.title;
     mediaDate.textContent = data.date;
     mediaExplanation.textContent = data.explanation;
