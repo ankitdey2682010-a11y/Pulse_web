@@ -2,5 +2,5 @@ import { defineConfig } from 'vite'
 
 export default defineConfig(
   {
-  base: '/Pulse_web/',
+  base: '/Pulse_web/Pulse_Web/',
 })
