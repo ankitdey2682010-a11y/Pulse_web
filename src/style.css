@@ -1,10 +1,10 @@
 :root 
 {
-    --bg-color: #141c40;
+    --bg-color: #0b1027;
     --card-bg: #394381;
     --accent-color: #4c3bcd;
-    --text-color: #f8f6f6;
-    --text-dim: #f4f6f9;
+    --text-color: #7c7c7c;
+    --text-dim: #94a3b8;
 }
 
 * 
@@ -63,7 +63,7 @@ input[type="date"], button
 {
     padding: 10px 15px;
     border-radius: 8px;
-    border: 1px solid #edeef1;
+    border: 1px solid #2d3748;
     background: var(--card-bg);
     color: var(--text-color);
     outline: none;
@@ -97,7 +97,7 @@ button:hover
 #media-container img, #media-container iframe 
 {
     width: 100%;
-    max-height: 250px;
+    max-height: 500px;
     object-fit: cover;
     border-radius: 8px;
 }
