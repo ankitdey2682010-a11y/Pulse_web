@@ -1,76 +1,90 @@
 import './style.css';
 
+// DOM elements
 const datePicker = document.getElementById('date-picker');
-
 const fetchBtn = document.getElementById('fetch-btn');
-
+const loadingSpinner = document.getElementById('loading');
 const mediaContainer = document.getElementById('media-container');
-
 const mediaTitle = document.getElementById('media-title');
-
 const mediaDate = document.getElementById('media-date');
-
 const mediaExplanation = document.getElementById('media-explanation');
 
-const loadingSpinner = document.getElementById('loading');
+// Environment Key or fallback DEMO_KEY
+const API_KEY = import.meta.env.VITE_NASA_API_KEY || 'DEMO_KEY';
 
+// Set default max date to today in YYYY-MM-DD
 const today = new Date().toISOString().split('T')[0];
 datePicker.max = today;
-datePicker.value = today;
 
-async function fetchApod(date) 
-{
-
-    const apiKey = import.meta.env.VITE_NASA_API_KEY || 'DEMO_KEY';
-    const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`;
-
-    loadingSpinner.classList.remove('hidden');
+async function fetchNASAData(selectedDate = '') {
+    showLoading(true);
+    mediaTitle.textContent = 'Loading cosmic data...';
+    mediaExplanation.textContent = '';
+    mediaDate.textContent = '';
     mediaContainer.innerHTML = '';
-    
-    try 
-    {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch data from NASA API');
-        
-        const data = await response.json();
-        renderApod(data);
-    } 
-    catch (error) 
-    {
 
-        mediaTitle.textContent = "Error";
-        mediaExplanation.textContent = error.message;
-    }
-     finally 
-     {
-        loadingSpinner.classList.add('hidden');
+    try {
+        let url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`;
+        if (selectedDate) {
+            url += `&date=${selectedDate}`;
+        }
+
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.msg || errorData.error?.message || `HTTP Error ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderData(data);
+    } catch (error) {
+        console.error('Fetch error:', error);
+        mediaTitle.textContent = 'Failed to load APOD data';
+        mediaExplanation.textContent = `Error: ${error.message}. Please try again or pick another date.`;
+    } finally {
+        showLoading(false);
     }
 }
 
-function renderApod(data) 
-{
-    mediaTitle.textContent = data.title;
-    mediaDate.textContent = data.date;
-    mediaExplanation.textContent = data.explanation;
+function renderData(data) {
+    mediaTitle.textContent = data.title || 'Astronomy Picture of the Day';
+    mediaDate.textContent = data.date || '';
+    mediaExplanation.textContent = data.explanation || 'No description provided.';
+
+    // Clear previous media
+    mediaContainer.innerHTML = '';
 
     if (data.media_type === 'image') {
         const img = document.createElement('img');
         img.src = data.hdurl || data.url;
         img.alt = data.title;
+        img.className = 'apod-media';
         mediaContainer.appendChild(img);
     } else if (data.media_type === 'video') {
         const iframe = document.createElement('iframe');
         iframe.src = data.url;
-        iframe.frameBorder = "0";
+        iframe.title = data.title;
         iframe.allowFullscreen = true;
+        iframe.className = 'apod-media apod-video';
         mediaContainer.appendChild(iframe);
     }
 }
 
-fetchBtn.addEventListener('click', () => {
-    if (datePicker.value) {
-        fetchApod(datePicker.value);
+function showLoading(isLoading) {
+    if (loadingSpinner) {
+        if (isLoading) {
+            loadingSpinner.classList.remove('hidden');
+        } else {
+            loadingSpinner.classList.add('hidden');
+        }
     }
+}
+
+// Event Listeners
+fetchBtn.addEventListener('click', () => {
+    fetchNASAData(datePicker.value);
 });
 
-fetchApod(today);
+// Automatically fetch today's picture on initial load
+fetchNASAData();
