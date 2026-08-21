@@ -8,7 +8,6 @@ const mediaExplanation = document.getElementById('media-explanation');
 
 const API_KEY = 'Mj3DXH3FK2rHl8M6H60im2gw7AfpDr5pPvW6fuYu';
 
-// Set default max date to today's date in YYYY-MM-DD
 const today = new Date().toISOString().split('T')[0];
 datePicker.max = today;
 
@@ -93,5 +92,4 @@ fetchBtn.addEventListener('click', () => {
     fetchNASAData(datePicker.value);
 });
 
-// Automatically fetch today's picture
 fetchNASAData();
