@@ -1,29 +1,35 @@
+import { ssrExportAllKey } from 'vite/runtime';
 import './style.css';
 
-// DOM elements
 const datePicker = document.getElementById('date-picker');
+
 const fetchBtn = document.getElementById('fetch-btn');
+
 const loadingSpinner = document.getElementById('loading');
+
 const mediaContainer = document.getElementById('media-container');
+
 const mediaTitle = document.getElementById('media-title');
+
 const mediaDate = document.getElementById('media-date');
+
 const mediaExplanation = document.getElementById('media-explanation');
 
-// Environment Key or fallback DEMO_KEY
 const API_KEY = import.meta.env.VITE_NASA_API_KEY || 'DEMO_KEY';
 
-// Set default max date to today in YYYY-MM-DD
 const today = new Date().toISOString().split('T')[0];
 datePicker.max = today;
 
-async function fetchNASAData(selectedDate = '') {
+async function fetchNASAData(selectedDate = '') 
+{
     showLoading(true);
     mediaTitle.textContent = 'Loading cosmic data...';
     mediaExplanation.textContent = '';
     mediaDate.textContent = '';
     mediaContainer.innerHTML = '';
 
-    try {
+    try 
+    {
         let url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`;
         if (selectedDate) {
             url += `&date=${selectedDate}`;
@@ -31,7 +37,8 @@ async function fetchNASAData(selectedDate = '') {
 
         const response = await fetch(url);
         
-        if (!response.ok) {
+        if (!response.ok) 
+            {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.msg || errorData.error?.message || `HTTP Error ${response.status}`);
         }
@@ -52,7 +59,6 @@ function renderData(data) {
     mediaDate.textContent = data.date || '';
     mediaExplanation.textContent = data.explanation || 'No description provided.';
 
-    // Clear previous media
     mediaContainer.innerHTML = '';
 
     if (data.media_type === 'image') {
@@ -71,20 +77,23 @@ function renderData(data) {
     }
 }
 
-function showLoading(isLoading) {
-    if (loadingSpinner) {
-        if (isLoading) {
+function showLoading(isLoading) 
+{
+    if (loadingSpinner) 
+        {
+        if (isLoading) 
+            {
             loadingSpinner.classList.remove('hidden');
-        } else {
+        }
+         else 
+            {
             loadingSpinner.classList.add('hidden');
         }
     }
 }
 
-// Event Listeners
 fetchBtn.addEventListener('click', () => {
     fetchNASAData(datePicker.value);
 });
 
-// Automatically fetch today's picture on initial load
 fetchNASAData();
