@@ -1,5 +1,3 @@
-import './style.css';
-
 const datePicker = document.getElementById('date-picker');
 const fetchBtn = document.getElementById('fetch-btn');
 const loadingSpinner = document.getElementById('loading');
@@ -8,12 +6,11 @@ const mediaTitle = document.getElementById('media-title');
 const mediaDate = document.getElementById('media-date');
 const mediaExplanation = document.getElementById('media-explanation');
 
-// NASA API Key fallback
-const API_KEY = import.meta.env.VITE_NASA_API_KEY || 'Mj3DXH3FK2rHl8M6H60im2gw7AfpDr5pPvW6fuYu';
+const API_KEY = 'Mj3DXH3FK2rHl8M6H60im2gw7AfpDr5pPvW6fuYu';
 
-// Set maximum selectable date to today's date in US Eastern Time (APOD release time zone)
-const usDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
-datePicker.max = usDate;
+// Set default max date to today's date in YYYY-MM-DD
+const today = new Date().toISOString().split('T')[0];
+datePicker.max = today;
 
 async function fetchNASAData(selectedDate = '') {
     showLoading(true);
@@ -39,10 +36,7 @@ async function fetchNASAData(selectedDate = '') {
     } catch (error) {
         console.error('Fetch error:', error);
         mediaTitle.textContent = 'Unable to Load Picture';
-        mediaExplanation.innerHTML = `
-            <span style="color: #f87171;">${error.message}</span><br><br>
-            <em>Tip: NASA APOD only releases one image per day (US Eastern Time). Try choosing an earlier date.</em>
-        `;
+        mediaExplanation.innerHTML = `<span style="color: #f87171;">${error.message}</span>`;
     } finally {
         showLoading(false);
     }
@@ -77,11 +71,10 @@ function renderData(data) {
             iframe.style.borderRadius = '8px';
             mediaContainer.appendChild(iframe);
         } else {
-            // Direct video or external blocked site
             mediaContainer.innerHTML = `
                 <div style="padding: 1.5rem; text-align: center; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                    <p style="margin-bottom: 0.8rem;">This media must be viewed directly on the source host:</p>
-                    <a href="${mediaUrl}" target="_blank" rel="noopener noreferrer" style="color: #93c5fd; text-decoration: underline; font-weight: bold; font-size: 1.1rem;">
+                    <p style="margin-bottom: 0.8rem; color: #cbd5e1;">This media must be viewed directly on the source host:</p>
+                    <a href="${mediaUrl}" target="_blank" rel="noopener noreferrer" style="color: #93c5fd; text-decoration: underline; font-weight: bold;">
                         Open Media in New Tab ↗
                     </a>
                 </div>
@@ -100,5 +93,5 @@ fetchBtn.addEventListener('click', () => {
     fetchNASAData(datePicker.value);
 });
 
-// Fetch current picture on load
+// Automatically fetch today's picture
 fetchNASAData();
